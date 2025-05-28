@@ -173,7 +173,6 @@ class HealthManager: ObservableObject {
         }
     } // END OF describeSleepStage FUNCTION
     
-    
     // MARK: - Observer Queries
 
     func startObservers() {
@@ -191,7 +190,7 @@ class HealthManager: ObservableObject {
                     return
                 }
                 
-                print("🔄 Health data changed: \(type)")
+                print("Health data changed: \(type)")
                 self?.fetchAllHealthData()
             }
 
@@ -200,9 +199,9 @@ class HealthManager: ObservableObject {
             // Request background delivery (watchOS supports limited modes)
             healthStore.enableBackgroundDelivery(for: type, frequency: .immediate) { success, error in
                 if let error = error {
-                    print("❌ Background delivery error: \(error.localizedDescription)")
+                    print("Background delivery error: \(error.localizedDescription)")
                 } else if success {
-                    print("✅ Background delivery enabled for \(type)")
+                    print("Background delivery enabled for \(type)")
                 }
             }
         }
