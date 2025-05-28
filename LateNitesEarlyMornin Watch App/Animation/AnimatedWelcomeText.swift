@@ -22,8 +22,16 @@ struct AnimatedWelcomeText: View {
                 .offset(x: offsetX) // moves it left/right
                 .frame(width: viewWidth, alignment: .center) // center it in frame
                 .onAppear {
-                    runAnimationCycle(distance: travelDistance, repeatCount: 1) // run once
+                    if travelDistance > 0 {
+                        runAnimationCycle(distance: travelDistance, repeatCount: 1)
+                    } else {
+                        // Retry after a slight delay if width is still 0
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            runAnimationCycle(distance: geo.size.width, repeatCount: 2)
+                        }
+                    }
                 }
+
         }
         .frame(height: 20) // keep it tight height wise
     }

@@ -1,0 +1,22 @@
+#TO DO
+
+# Fix "Health Access Needed" Text in HealthKitHelpView,  it needs to remain still as in not move when the user scrolls but the remainnig caption/directions text  will continue to scroll down or up it just cant
+
+# Iron out HealthManager TryAgain Function (user has to manually do it in settings )since HealthKit doesnt allow you to reprompt the 'accept all permissions popup'. Middle Finger to Apple for this one cant find a work around other than the user having to do it themselves
+
+# Finishing setting up MoodStatusView to add the challenges
+
+# Add button that allows user to manually change the mood in MoodStatusView. (can reuse the picker or make something new bc we dont have a back button on the picker view)
+
+# Figure out notications and how they work
+
+#
+
+# Begin on the complication
+
+# Get with team and talk about achivements and how they would like them to function
+
+# Get Hi FI for the iOS app
+
+
+

@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+//MARK: App runs from here beause if the user is opening it for the first time it needs to figure out what screen to send them too hence why we r using this instead of good ol content view 'MoodStatusView' is the defult screen you will be in once youve used the app. The picker will than become a button just in case you wanted to change your mood if the app predicted it incorrectly
+
 @main
 struct LateNitesEarlyMornin_Watch_AppApp: App {
     @AppStorage("hasLaunchedBefore") private var hasLaunchedBefore: Bool = false
@@ -15,7 +17,7 @@ struct LateNitesEarlyMornin_Watch_AppApp: App {
             if hasLaunchedBefore {
                 MoodStatusView()
             } else {
-                PickYourMoodView()
+                LaunchLoadingView()
                     .onDisappear {
                         hasLaunchedBefore = true
                     }
