@@ -9,9 +9,17 @@ import SwiftUI
 
 @main
 struct LateNitesEarlyMornin_Watch_AppApp: App {
+    @AppStorage("hasLaunchedBefore") private var hasLaunchedBefore: Bool = false
     var body: some Scene {
         WindowGroup {
-            MoodStatusView()
+            if hasLaunchedBefore {
+                MoodStatusView()
+            } else {
+                PickYourMoodView()
+                    .onDisappear {
+                        hasLaunchedBefore = true
+                    }
+            }
         }
     }
 }

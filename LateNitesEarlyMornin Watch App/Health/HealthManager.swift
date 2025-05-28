@@ -18,7 +18,8 @@ class HealthManager: ObservableObject {
     @Published var latestExerciseMinutes: Double = 0
     @Published var latestSleepStage: String = "Unknown"
     @Published var latestHeartRate: Double = 0
-    
+    @Published var shouldShowHealthKitHelp: Bool = false
+
     init() { }
     
     // MARK: Authorization
@@ -41,15 +42,16 @@ class HealthManager: ObservableObject {
             DispatchQueue.main.async {
                 if success {
                     self.healthKitAuthorized = true
+                    self.shouldShowHealthKitHelp = false // help screen flag
                     print("Authorized!")
                     self.fetchAllHealthData()
                 } else {
                     self.healthKitAuthorized = false
-                    print("Failed")
-                    
+                    self.shouldShowHealthKitHelp = true // triggers help screen
+                    print("HealthKit authorization failed")
+
                     if let error = error {
                         print("Error: \(error.localizedDescription)")
-                        // TODO: FIND A WAY TO ALERT USER TO AUTHORIZE
                     }
                 }
             }
