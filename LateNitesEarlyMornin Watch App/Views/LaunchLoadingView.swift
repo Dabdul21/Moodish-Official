@@ -9,6 +9,7 @@ import SwiftUI
 
 struct LaunchLoadingView: View {
     @StateObject private var healthManager = HealthManager()
+    @EnvironmentObject var notificationManager: NotificationManager
     
     var body: some View {
         Group {
@@ -19,6 +20,7 @@ struct LaunchLoadingView: View {
             } else if healthManager.healthKitAuthorized {
                 PickYourMoodView()
                     .environmentObject(healthManager)
+                    .environmentObject(notificationManager)
             } else {
                 VStack {
                     Image("Moodish")
@@ -31,6 +33,9 @@ struct LaunchLoadingView: View {
                 }
                 .onAppear {
                     healthManager.requestAuthorization()
+                    
+                    // Request notification permission during initial setup
+                    notificationManager.requestNotificationPermission()
                 }
             }
         }
@@ -39,4 +44,5 @@ struct LaunchLoadingView: View {
 
 #Preview {
     LaunchLoadingView()
+        .environmentObject(NotificationManager.shared)
 }

@@ -10,6 +10,8 @@ import SwiftUI
 struct MoodStatusView: View {
     
     @StateObject private var healthManager = HealthManager()
+    @EnvironmentObject var notificationManager: NotificationManager
+    @State private var previousMood: Mood?
     
     var inferredMood: Mood {
         MoodEngine.inferMood(
@@ -70,9 +72,18 @@ struct MoodStatusView: View {
             .onAppear {
                 healthManager.requestAuthorization()
             }
+            .onChange(of: inferredMood) { oldValue, newValue in
+                // Only send notification if mood actually changed and we have a previous mood
+                if let previous = previousMood, previous != newValue {
+                    notificationManager.notifyMoodChange(to: newValue)
+                    notificationManager.scheduleChallengeReminder(for: newValue)
+                }
+                previousMood = newValue
+            }
         }
     }
 }
 #Preview{
     MoodStatusView()
+        .environmentObject(NotificationManager.shared)
 }

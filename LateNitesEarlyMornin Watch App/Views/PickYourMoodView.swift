@@ -11,6 +11,7 @@ struct PickYourMoodView: View {
     @State private var selectedMood: Mood = .happy
     @FocusState private var pickerFocused: Bool
     @State private var showMoodStatus = false
+    @EnvironmentObject var notificationManager: NotificationManager
 
     var body: some View {
         NavigationStack {
@@ -37,6 +38,12 @@ struct PickYourMoodView: View {
                 .padding(.top, 2)
 
                 Button(action: {
+                    // Send mood change notification
+                    notificationManager.notifyMoodChange(to: selectedMood)
+                    
+                    // Schedule challenge reminder (5 minutes later)
+                    notificationManager.scheduleChallengeReminder(for: selectedMood)
+                    
                     showMoodStatus = true
                 }) {
                     Text("Continue")
@@ -68,4 +75,5 @@ struct PickYourMoodView: View {
 
 #Preview{
     PickYourMoodView()
+        .environmentObject(NotificationManager.shared)
 }

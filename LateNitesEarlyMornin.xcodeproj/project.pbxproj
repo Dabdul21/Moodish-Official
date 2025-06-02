@@ -36,7 +36,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		B28CE6F82DE646FB006803EC /* LateNitesEarlyMornin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = LateNitesEarlyMornin.app; path = "/Users/dayanabdulla/Desktop/LateNitesEarlyMornin/build/Debug-iphoneos/LateNitesEarlyMornin.app"; sourceTree = "<absolute>"; };
+		B21930032DEDCB6D0096299A /* LateNitesEarlyMornin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LateNitesEarlyMornin.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B28CE7212DE650D2006803EC /* gitignore.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = gitignore.txt; sourceTree = "<group>"; };
 		B28CE7332DE6C07F006803EC /* LateNitesEarlyMornin Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "LateNitesEarlyMornin Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B28CE7472DE71519006803EC /* TODO */ = {isa = PBXFileReference; lastKnownFileType = text; path = TODO; sourceTree = "<group>"; };
@@ -81,6 +81,7 @@
 				B28CE6FA2DE646FB006803EC /* LateNitesEarlyMornin */,
 				B28CE70C2DE646FE006803EC /* LateNitesEarlyMornin Watch App */,
 				B28CE7332DE6C07F006803EC /* LateNitesEarlyMornin Watch App.app */,
+				B21930032DEDCB6D0096299A /* LateNitesEarlyMornin.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -108,7 +109,7 @@
 			packageProductDependencies = (
 			);
 			productName = LateNitesEarlyMornin;
-			productReference = B28CE6F82DE646FB006803EC /* LateNitesEarlyMornin.app */;
+			productReference = B21930032DEDCB6D0096299A /* LateNitesEarlyMornin.app */;
 			productType = "com.apple.product-type.application";
 		};
 		B28CE7072DE646FE006803EC /* LateNitesEarlyMornin Watch App */ = {
