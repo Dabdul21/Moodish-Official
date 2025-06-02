@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct MoodStatusView: View {
+    
     @StateObject private var healthManager = HealthManager()
     
     var inferredMood: Mood {
@@ -48,6 +49,18 @@ struct MoodStatusView: View {
                 Text("Steps: \(Int(healthManager.latestSteps))")
                 Text("Exercise: \(Int(healthManager.latestExerciseMinutes)) min")
                 Text("Sleep Stage: \(healthManager.latestSleepStage)")
+                Divider().background(Color.gray)
+                
+                // Navigate to ChallengeView from inferredMood
+                NavigationLink(
+                    destination: ChallengeView(mood: inferredMood)
+                ) {
+                    Text("Go to Challenge")
+                        .font(.caption)
+                        .padding()
+                        
+                }
+                
             }
             .font(.caption2)
             .multilineTextAlignment(.leading)

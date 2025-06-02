@@ -11,9 +11,10 @@
 import SwiftUI
 
 struct ChallengeView: View {
-    let mood: Mood
-    @State private var currentChallengeIndex = 0
 
+    @State private var currentChallengeIndex = 0
+    let mood: Mood // passed mood from another screen
+ 
     var body: some View {
         VStack(spacing: 20) {
             Text("Mood: \(mood.label)")
@@ -34,6 +35,7 @@ struct ChallengeView: View {
             .buttonStyle(.borderedProminent)
         }
         .padding()
+        .navigationTitle("Your Challenge")
     }
 }
 
@@ -64,5 +66,5 @@ extension Mood {
 
 #Preview {
     // Preview using a single mood (e.g., .nervous)
-    ChallengeView(mood: .nervous)
+    ChallengeView(mood: .calm)
 }

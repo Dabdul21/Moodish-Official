@@ -8,6 +8,7 @@
 import Foundation
 
 struct MoodEngine {
+   
     static func inferMood(
         heartRate: Double,
         steps: Double,
