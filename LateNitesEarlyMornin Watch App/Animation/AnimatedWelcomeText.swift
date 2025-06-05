@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AnimatedWelcomeText: View {
     @State private var offsetX: CGFloat = 0
-    let text = "Welcome!"
+    let text = "Manual Mood Override!"
 
     var body: some View {
         GeometryReader { geo in
@@ -18,7 +18,7 @@ struct AnimatedWelcomeText: View {
 
             Text(text)
                 .font(.caption)
-                .foregroundColor(.blue)
+                .foregroundColor(.red)
                 .offset(x: offsetX) // moves it left/right
                 .frame(width: viewWidth, alignment: .center) // center it in frame
                 .onAppear {

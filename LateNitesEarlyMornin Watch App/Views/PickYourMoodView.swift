@@ -8,35 +8,87 @@
 import SwiftUI
 
 struct PickYourMoodView: View {
-    @State private var selectedMood: Mood = .happy
+    @State private var selectedMood: Mood
     @FocusState private var pickerFocused: Bool
     @State private var showMoodStatus = false
     @EnvironmentObject var notificationManager: NotificationManager
+    
+    // Optional callback for manual mood override
+    private let onMoodSelected: ((Mood) -> Void)?
+    private let isManualOverride: Bool
+    
+    // Default initializer for original use case
+    init() {
+        self._selectedMood = State(initialValue: .happy)
+        self.onMoodSelected = nil
+        self.isManualOverride = false
+    }
+    
+    // Initializer for manual mood override
+    init(selectedMood: Mood, onMoodSelected: @escaping (Mood) -> Void) {
+        self._selectedMood = State(initialValue: selectedMood)
+        self.onMoodSelected = onMoodSelected
+        self.isManualOverride = true
+    }
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 5) {
-                HStack {
-//                    Spacer()
+        VStack(spacing: 5) {
+            HStack {
+                if isManualOverride {
                     AnimatedWelcomeText() //is in animation folder
                 }
+            }
 
+
+            if isManualOverride {
                 Text("How do you feel?")
-                    .font(.headline)
-//                    .padding(.top, 2)
+                    .font(.caption)
+                    .foregroundColor(.white.opacity(0.8))
+                    .multilineTextAlignment(.center)
+            }
 
-                Picker("",selection: $selectedMood) { //left the argument empty but Pick a mood: was there
-                    
-                    ForEach(Mood.allCases) { mood in
-                        Text(mood.label).tag(mood)
-                    }
+            Picker("", selection: $selectedMood) {
+                ForEach(Mood.allCases) { mood in
+                    Text(mood.label).tag(mood)
                 }
-                .pickerStyle(.wheel)
-                .frame(height: 73)
-                .focusable(true)
-                .focused($pickerFocused)
-                .padding(.top, 2)
+            }
+            .pickerStyle(.wheel)
+            .frame(height: 73)
+            .focusable(true)
+            .focused($pickerFocused)
+            .padding(.top, 2)
 
+            if isManualOverride {
+                // Manual override buttons
+                HStack(spacing: 12) {
+                    Button("Cancel") {
+                        // Go back without changing mood - pass the original mood
+                        onMoodSelected?(selectedMood)
+                    }
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(.gray, lineWidth: 1)
+                    )
+                    
+                    Button("Set Mood") {
+                        onMoodSelected?(selectedMood)
+                    }
+                    .font(.caption)
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(selectedMood.color)
+                    )
+                }
+                .buttonStyle(.plain)
+            } else {
+                // Original continue button
                 Button(action: {
                     // Send mood change notification
                     notificationManager.notifyMoodChange(to: selectedMood)
@@ -58,22 +110,23 @@ struct PickYourMoodView: View {
                 }
                 .buttonStyle(.plain)
                 .padding(.top, 5)
+            }
 
-                Spacer()
-            }
-            .padding()
-            .navigationDestination(isPresented: $showMoodStatus) {
-                MoodStatusView()
-            }
-            .onAppear {
-                pickerFocused = true
-            }
+            Spacer()
+        }
+        .padding()
+        .background(isManualOverride ? .black : .clear)
+        .navigationTitle(isManualOverride ? "" : "")
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationDestination(isPresented: $showMoodStatus) {
+            MoodStatusView()
+        }
+        .onAppear {
+            pickerFocused = true
         }
     }
 }
 
-
-#Preview{
+#Preview {
     PickYourMoodView()
-        .environmentObject(NotificationManager.shared)
 }
