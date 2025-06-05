@@ -18,9 +18,12 @@ struct LaunchLoadingView: View {
                     healthManager.requestAuthorization()
                 }
             } else if healthManager.healthKitAuthorized {
-                PickYourMoodView()
-                    .environmentObject(healthManager)
-                    .environmentObject(notificationManager)
+                // Go directly to MoodStatusView since it shows inferred mood
+                NavigationStack {
+                    MoodStatusView()
+                        .environmentObject(healthManager)
+                        .environmentObject(notificationManager)
+                }
             } else {
                 VStack {
                     Image("Moodish")

@@ -12,13 +12,17 @@ import Combine
 class HealthManager: ObservableObject {
     // MARK: Properties
     let healthStore = HKHealthStore()
-    var healthKitAuthorized = false
+    @Published var healthKitAuthorized = false
     @Published var healthKitChanges: [String] = []
     @Published var latestSteps: Double = 0
     @Published var latestExerciseMinutes: Double = 0
     @Published var latestSleepStage: String = "Unknown"
     @Published var latestHeartRate: Double = 0
     @Published var shouldShowHealthKitHelp: Bool = false
+    
+    private var observerQueries: [HKObserverQuery] = []
+    private var lastDataFetch: Date = Date.distantPast
+    private let minimumFetchInterval: TimeInterval = 5 // Only fetch every 60 seconds
 
     init() { }
     
@@ -29,7 +33,6 @@ class HealthManager: ObservableObject {
             return
         }
         
-        // USES SOMETHING CALLED "compactMap" To unwrap and convert the objects. It will crash if you remove.
         let readTypes: Set<HKObjectType> = Set([
             HKQuantityType.quantityType(forIdentifier: .stepCount),
             HKQuantityType.quantityType(forIdentifier: .appleExerciseTime),
@@ -38,16 +41,16 @@ class HealthManager: ObservableObject {
         ].compactMap { $0 })
 
         healthStore.requestAuthorization(toShare: nil, read: readTypes) { success, error in
-            // WE USE DISPATCH TO UPDATE THE PROPERTIES IN THE BACKGROUND. THEN CALLS fetchAllData
             DispatchQueue.main.async {
                 if success {
                     self.healthKitAuthorized = true
-                    self.shouldShowHealthKitHelp = false // help screen flag
-                    print("Authorized!")
+                    self.shouldShowHealthKitHelp = false
+                    print("HealthKit Authorized!")
                     self.fetchAllHealthData()
+                    self.startObservers()
                 } else {
                     self.healthKitAuthorized = false
-                    self.shouldShowHealthKitHelp = true // triggers help screen
+                    self.shouldShowHealthKitHelp = true
                     print("HealthKit authorization failed")
 
                     if let error = error {
@@ -55,37 +58,70 @@ class HealthManager: ObservableObject {
                     }
                 }
             }
-        } // END: HealthKit Auth lets us read all those properties
-    } // END OF requestAuthorization FUNCTION
+        }
+    }
     
-    // MARK: Fetch All
+    // MARK: Fetch All with Rate Limiting
     func fetchAllHealthData() {
-        fetchQuantity(.stepCount) { self.latestSteps = $0 }
-        fetchQuantity(.appleExerciseTime) { self.latestExerciseMinutes = $0 }
-        fetchQuantity(.heartRate) { self.latestHeartRate = $0 }
+        // Rate limiting - don't fetch too frequently
+        let now = Date()
+        if now.timeIntervalSince(lastDataFetch) < minimumFetchInterval {
+            print("DEBUG: Skipping data fetch - too soon (last fetch: \(lastDataFetch))")
+            return
+        }
+        
+        print("DEBUG: Fetching all health data...")
+        lastDataFetch = now
+        
+        fetchQuantity(.stepCount) {
+            print("DEBUG: Steps fetched: \($0)")
+            self.latestSteps = $0
+        }
+        fetchQuantity(.appleExerciseTime) {
+            print("DEBUG: Exercise minutes fetched: \($0)")
+            self.latestExerciseMinutes = $0
+        }
+        fetchQuantity(.heartRate) {
+            print("DEBUG: Heart rate fetched: \($0)")
+            self.latestHeartRate = $0
+        }
         fetchSleepStage()
-    } // END OF fetchAllHealthData FUNCTION
+    }
     
     // MARK: Helpers
     private func fetchQuantity(_ typeIdentifier: HKQuantityTypeIdentifier, completion: @escaping (Double) -> Void) {
-        // WILL CONVERT IDENTIFIERS INTO A REAL HKQuantityType if it fails it returns early
-        guard let type = HKQuantityType.quantityType(forIdentifier: typeIdentifier) else { 
+        guard let type = HKQuantityType.quantityType(forIdentifier: typeIdentifier) else {
             completion(0)
-            return 
+            return
         }
         
-        // SORTS RESULTS BY END DATE NEWEST WILL BE FIRST
+        let calendar = Calendar.current
+        let now = Date()
+        
+        let predicate: NSPredicate?
+        let limit: Int
+        
+        if typeIdentifier == .stepCount || typeIdentifier == .appleExerciseTime {
+            // For cumulative data, get today's data
+            let startOfDay = calendar.startOfDay(for: now)
+            predicate = HKQuery.predicateForSamples(withStart: startOfDay, end: now, options: .strictStartDate)
+            limit = HKObjectQueryNoLimit
+        } else {
+            // For heart rate, get recent data (last 2 hours)
+            let twoHoursAgo = calendar.date(byAdding: .hour, value: -2, to: now) ?? now
+            predicate = HKQuery.predicateForSamples(withStart: twoHoursAgo, end: now, options: .strictStartDate)
+            limit = 10 // Get multiple recent samples for better average
+        }
+        
         let sort = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
         
-        // ASKS FOR THE MOST RECENT SAMPLE: limit 1 means give me the latest val
         let query = HKSampleQuery(
             sampleType: type,
-            predicate: nil,
-            limit: 1,
+            predicate: predicate,
+            limit: limit,
             sortDescriptors: [sort]
         ) { _, samples, error in
             
-            // Handle errors
             if let error = error {
                 print("Error fetching \(typeIdentifier): \(error.localizedDescription)")
                 DispatchQueue.main.async {
@@ -94,8 +130,8 @@ class HealthManager: ObservableObject {
                 return
             }
             
-            // Just returns 0 if you get no sample
-            guard let sample = samples?.first as? HKQuantitySample else {
+            guard let samples = samples as? [HKQuantitySample], !samples.isEmpty else {
+                print("DEBUG: No samples found for \(typeIdentifier)")
                 DispatchQueue.main.async {
                     completion(0)
                 }
@@ -111,58 +147,75 @@ class HealthManager: ObservableObject {
             default:
                 unit = .count()
             }
-
             
-            // Completion returns the result from healthkit and doubleValue converts raw data to a readable double
+            var totalValue: Double = 0
+            
+            if typeIdentifier == .stepCount || typeIdentifier == .appleExerciseTime {
+                // Sum all samples for cumulative data
+                for sample in samples {
+                    totalValue += sample.quantity.doubleValue(for: unit)
+                }
+            } else if typeIdentifier == .heartRate {
+                // Average recent heart rate samples for more stable reading
+                let recentSamples = Array(samples.prefix(5)) // Last 5 readings
+                if !recentSamples.isEmpty {
+                    let sum = recentSamples.reduce(0.0) { $0 + $1.quantity.doubleValue(for: unit) }
+                    totalValue = sum / Double(recentSamples.count)
+                }
+            }
+            
             DispatchQueue.main.async {
-                completion(sample.quantity.doubleValue(for: unit))
+                completion(totalValue)
             }
         }
         
         healthStore.execute(query)
-    } // END OF fetchQuantity FUNCTION
+    }
 
     private func fetchSleepStage() {
-        // Will convert into a HKCategoryType sleepAnalysis
-        guard let type = HKCategoryType.categoryType(forIdentifier: .sleepAnalysis) else { 
-            return 
+        guard let type = HKCategoryType.categoryType(forIdentifier: .sleepAnalysis) else {
+            return
         }
 
-        // Sorts sleep samples by endDate in descending order
+        // Get sleep data from last 8 hours (more realistic window)
+        let calendar = Calendar.current
+        let now = Date()
+        let eightHoursAgo = calendar.date(byAdding: .hour, value: -8, to: now) ?? now
+        
+        let predicate = HKQuery.predicateForSamples(withStart: eightHoursAgo, end: now, options: .strictStartDate)
         let sort = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
         
         let query = HKSampleQuery(
             sampleType: type,
-            predicate: nil,
+            predicate: predicate,
             limit: 1,
             sortDescriptors: [sort]
         ) { _, samples, error in
             
-            // Handle errors
             if let error = error {
                 print("Error fetching sleep stage: \(error.localizedDescription)")
                 return
             }
 
-            // Check to see if a valid sleep sample is actually returned
             guard let firstSample = samples?.first as? HKCategorySample else {
                 DispatchQueue.main.async {
+                    print("DEBUG: No recent sleep data found")
                     self.latestSleepStage = "Unknown"
                 }
                 return
             }
             
-            // It will then convert the value to a numeric number so it can be used by the enum
             let sleepStage = HKCategoryValueSleepAnalysis(rawValue: firstSample.value)
 
-            // Update the published property on the main thread
             DispatchQueue.main.async {
-                self.latestSleepStage = self.describeSleepStage(sleepStage)
+                let stageDescription = self.describeSleepStage(sleepStage)
+                print("DEBUG: Sleep stage fetched: \(stageDescription)")
+                self.latestSleepStage = stageDescription
             }
         }
         
         healthStore.execute(query)
-    } // END OF fetchSleepStage FUNCTION
+    }
 
     private func describeSleepStage(_ value: HKCategoryValueSleepAnalysis?) -> String {
         switch value {
@@ -173,11 +226,14 @@ class HealthManager: ObservableObject {
         case .some(.inBed): return "In Bed"
         default: return "Unknown"
         }
-    } // END OF describeSleepStage FUNCTION
+    }
     
-    // MARK: - Observer Queries
-
+    // MARK: - Observer Queries with Rate Limiting
     func startObservers() {
+        print("DEBUG: Starting health data observers...")
+        
+        stopObservers()
+        
         let typesToObserve: [HKSampleType?] = [
             HKQuantityType.quantityType(forIdentifier: .stepCount),
             HKQuantityType.quantityType(forIdentifier: .appleExerciseTime),
@@ -186,20 +242,28 @@ class HealthManager: ObservableObject {
         ]
         
         for type in typesToObserve.compactMap({ $0 }) {
-            let query = HKObserverQuery(sampleType: type, predicate: nil) { [weak self] _, _, error in
+            let query = HKObserverQuery(sampleType: type, predicate: nil) { [weak self] _, completionHandler, error in
                 if let error = error {
                     print("Observer error for \(type): \(error.localizedDescription)")
+                    completionHandler()
                     return
                 }
                 
-                print("Health data changed: \(type)")
-                self?.fetchAllHealthData()
+                print("DEBUG: Health data changed for type: \(type)")
+                
+                // Rate limit the data fetching from observers too
+                DispatchQueue.main.async {
+                    self?.fetchAllHealthData()
+                }
+                
+                completionHandler()
             }
 
+            observerQueries.append(query)
             healthStore.execute(query)
 
-            // Request background delivery (watchOS supports limited modes)
-            healthStore.enableBackgroundDelivery(for: type, frequency: .immediate) { success, error in
+            // Use less frequent background delivery
+            healthStore.enableBackgroundDelivery(for: type, frequency: .hourly) { success, error in
                 if let error = error {
                     print("Background delivery error: \(error.localizedDescription)")
                 } else if success {
@@ -208,21 +272,15 @@ class HealthManager: ObservableObject {
             }
         }
     }
-
-} // END OF HEALTH MANAGER CLASS
-
-// MARK: DOCS
-/*
-Section         Item                              Type                                  Description                                                                                         Return ->
-Properties    healthStore                         HKHealthStore                       The main HealthKit interface used to request authorization and execute health data queries.
-Properties    healthKitAuthorized                 Bool                           Tracks whether HealthKit authorization was successfully granted.
-Properties    @Published latestSteps              Double                      The latest step count retrieved from HealthKit.
-Properties    @Published latestExerciseMinutes    Double            The latest exercise time in minutes retrieved from HealthKit.
-Properties    @Published latestSleepStage         String                 The latest sleep stage retrieved and converted to a human-readable string.
-Properties    @Published latestHeartRate          Double                  The most recent heart rate value (BPM) retrieved from HealthKit.
-Functions    requestAuthorization()                                 Requests read access from the user for required HealthKit data types. On success, fetches the latest health data. ->   Void
-Functions    fetchAllHealthData()                                   Fetches the latest values for steps, exercise time, heart rate, and sleep stage.                                  ->       Void
-Functions    fetchQuantity(_:completion:)                           Fetches the latest quantity sample for a given HealthKit quantity type (e.g., step count, heart rate). Calls the completion handler with a Double result.                                                                                                                                                                               -> Void
-Functions    fetchSleepStage()                                      Fetches the latest sleep analysis category sample and updates the `latestSleepStage` property.                      -> Void
-Functions    describeSleepStage(_:)                                 Converts a `HKCategoryValueSleepAnalysis` value into a human-readable sleep stage string (e.g., REM, Core, Deep).   -> String
-*/
+    
+    func stopObservers() {
+        for query in observerQueries {
+            healthStore.stop(query)
+        }
+        observerQueries.removeAll()
+    }
+    
+    deinit {
+        stopObservers()
+    }
+}
