@@ -344,8 +344,10 @@
 				DEVELOPMENT_TEAM = B5N4Y94PAG;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "LateNitesEarlyMornin-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = LateNitesEarlyMornin;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Please allow Moodish to read your sleep, heart rate, activity, and steps data to infer your mood.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Please allow Moodish to write mood-related insights to your Health app, such as mood trends and related goals.\nPlease allow Moodish to write mood-related inights to your Health App.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = Dayan.LateNitesEarlyMornin;
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
@@ -377,8 +379,10 @@
 				DEVELOPMENT_TEAM = B5N4Y94PAG;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "LateNitesEarlyMornin-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = LateNitesEarlyMornin;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Please allow Moodish to read your sleep, heart rate, activity, and steps data to infer your mood.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Please allow Moodish to write mood-related insights to your Health app, such as mood trends and related goals.\nPlease allow Moodish to write mood-related inights to your Health App.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = Dayan.LateNitesEarlyMornin;
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
@@ -413,11 +417,11 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = LateNitesEarlyMornin;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Please allow Moodish to read your sleep, heart rate, activity, and steps data to infer your mood.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Please allow Moodish to write mood-related insights to your Health app, such as mood trends and related goals.\nPlease allow Moodish to write mood-related inights to your Health App.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -451,11 +455,11 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = LateNitesEarlyMornin;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Please allow Moodish to read your sleep, heart rate, activity, and steps data to infer your mood.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Please allow Moodish to write mood-related insights to your Health app, such as mood trends and related goals.\nPlease allow Moodish to write mood-related inights to your Health App.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
