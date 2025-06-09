@@ -39,6 +39,26 @@ struct ChallengeView: View {
     }
 }
 
+//struct MoodQuickScope: Widget {
+//    var body: some WidgetConfiguration {
+//        MoodConfigeration(
+//            for:Mood.self) { context in
+//                DeliveryActivityContent( context: context)
+//            } dynamicIsland: { context in
+//                DynamicIsland {
+//                    //.........
+//                } compactLeading: {
+//                    DeliveryCompactLeading(context)
+//                } compactTrailing: {
+//                    DeliveryCompactTrailing(context)
+//                } minimal: {
+//                    DeliveryMinimal(context)
+//                }
+//            }
+//            .supple
+//        
+//    }
+//}
 
     
 extension Mood {
