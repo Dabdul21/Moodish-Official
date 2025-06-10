@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import HealthKit
+
 
 struct MoodStatusView: View {
     

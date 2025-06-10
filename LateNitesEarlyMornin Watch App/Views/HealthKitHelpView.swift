@@ -7,6 +7,7 @@
 
 //MARK: User will only come here if they dont allow HealthKit, it willl show them how to change settings to allow than 
 import SwiftUI
+import HealthKit
 
 struct HealthKitHelpView: View {
     var retryAction: () -> Void
