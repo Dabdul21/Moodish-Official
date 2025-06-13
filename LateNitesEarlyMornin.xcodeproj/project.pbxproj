@@ -361,7 +361,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = LateNitesEarlyMornin;
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "Please allow Moodish to read your sleep, heart rate, activity, and steps data to infer your mood.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Please allow Moodish to read your sleep, heart rate, activity, and steps data to infer your mood.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = Otis.LateNitesEarlyMornin;
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
@@ -393,7 +393,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = LateNitesEarlyMornin;
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "Please allow Moodish to read your sleep, heart rate, activity, and steps data to infer your mood.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Please allow Moodish to read your sleep, heart rate, activity, and steps data to infer your mood.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = Otis.LateNitesEarlyMornin;
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;

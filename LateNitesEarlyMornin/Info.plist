@@ -4,5 +4,7 @@
 <dict>
 	<key>CFBundleGetInfoString</key>
 	<string></string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>This app needs access to your health data to provide personalized insights.></string>
 </dict>
 </plist>
