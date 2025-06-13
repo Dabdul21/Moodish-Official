@@ -17,7 +17,10 @@ struct LateNitesEarlyMorninApp: App {
                 .environmentObject(notificationManager)
                 .onAppear {
                     // Request notification permission when app launches
-                    notificationManager.requestNotificationPermission()
+                    NotificationManager.shared.requestNotificationPermission()
+
+                    notificationManager.scheduleDailyQuote(atHour: 9, minute: 0)
+                    notificationManager.scheduleDailyMoodLogReminder(atHour: 20, minute: 0)
                 }
         }
     }

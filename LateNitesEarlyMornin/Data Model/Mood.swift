@@ -2,14 +2,12 @@
 //  Mood.swift
 //  LateNitesEarlyMornin
 //
-//  Created by Dayan Abdulla on 6/2/25.
+//  Created by Dayan Abdulla on 5/28/25.
 //
 
-//<key>NSHealthShareUsageDescription</key>
-//<string>This app needs access to your health data to provide personalized insights.</string>
 import SwiftUI
 
-enum Mood: String, CaseIterable, Identifiable {
+enum Mood: String, CaseIterable, Identifiable, Codable {
     case overwhelmed
     case happy
     case excited
