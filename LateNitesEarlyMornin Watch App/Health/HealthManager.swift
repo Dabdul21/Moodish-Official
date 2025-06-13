@@ -27,6 +27,9 @@ class HealthManager: ObservableObject {
     init() { }
     
     // MARK: Authorization
+    
+//    <key>NSHealthShareUsageDescription</key>
+//    <string>This app needs access to your health data to provide personalized insights.</string>
     func requestAuthorization() {
         guard HKHealthStore.isHealthDataAvailable() else {
             print("Health Data not available on device")
