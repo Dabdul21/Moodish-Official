@@ -47,44 +47,51 @@ struct QuoteOfTheDayView: View {
         "It’s okay to ask for help when you need it.",
         "Today’s challenges build tomorrow’s strength.",
         "Be the calm in your own storm."
-
+        
     ]
-
-
+    
+    
     @State private var currentIndex = 0
     @State private var fadeIn = false
-
+    
     var body: some View {
-        VStack(spacing: 16) {
-            Text("“\(quotes[currentIndex])”")
-                .font(.system(size: 20, weight: .medium, design: .rounded))
+        ZStack {
+            LinearGradient(colors: [.bp1, .bp2],
+                           startPoint: .top,
+                           endPoint: .bottom)
 
-
-                .multilineTextAlignment(.center)
-                .opacity(fadeIn ? 1 : 0)
-                .onAppear {
+            
+            VStack(spacing: 16) {
+                Text("“\(quotes[currentIndex])”")
+                    .font(.system(size: 20, weight: .medium, design: .rounded))
+                
+                
+                    .multilineTextAlignment(.center)
+                    .opacity(fadeIn ? 1 : 0)
+                    .onAppear {
+                        withAnimation(.easeInOut(duration: 1.5)) {
+                            fadeIn = true
+                        }
+                    }
+                
+                Button("Refresh Quote") {
                     withAnimation(.easeInOut(duration: 1.5)) {
-                        fadeIn = true
+                        fadeIn = false
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        currentIndex = (currentIndex + 1) % quotes.count
+                        withAnimation(.easeInOut(duration: 1.5)) {
+                            fadeIn = true
+                        }
                     }
                 }
-
-            Button("Refresh Quote") {
-                withAnimation(.easeInOut(duration: 1.5)) {
-                    fadeIn = false
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                    currentIndex = (currentIndex + 1) % quotes.count
-                    withAnimation(.easeInOut(duration: 1.5)) {
-                        fadeIn = true
-                    }
-                }
+                .font(.caption)
             }
-            .font(.caption)
+            .padding(.horizontal)
         }
-        .padding(.horizontal)
     }
 }
+    #Preview {
+        QuoteOfTheDayView()
+    }
 
-#Preview {
-    QuoteOfTheDayView()
-}
